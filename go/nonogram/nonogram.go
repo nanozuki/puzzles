@@ -56,10 +56,11 @@ func generateCandidates(size int, clues []int) []Pattern {
 	return candidates
 }
 
-func (l *Line) filter(mask Pattern) tailChange {
+func (l *Line) filterAt(position int, fill bool) tailChange {
 	change := tailChange{from: l.tail, to: l.tail}
+	mask := Pattern(1) << (l.size - 1 - position)
 	for i := 0; i < l.tail; i++ {
-		for l.candidates[i]&mask == 0 {
+		for (fill && l.candidates[i]&mask == 0) || (!fill && l.candidates[i]&mask != 0) {
 			if i == l.tail-1 {
 				l.tail--
 				break
@@ -204,6 +205,10 @@ func (n *Nonogram) Solve() bool {
 		return true
 	}
 	n.println("Try to fill row", mrvRow, "with", minCandidates, "candidates")
+	previousTails := make([]int, len(n.columns))
+	for i, col := range n.columns {
+		previousTails[i] = col.tail
+	}
 	for _, pattern := range n.rows[mrvRow].candidates {
 		fillOk, changes := n.fillRow(mrvRow, pattern)
 		n.println("  Try pattern", fmt.Sprintf("%0*b", len(n.columns), pattern), "fillOk:", fillOk)
@@ -232,15 +237,13 @@ type tailChange struct {
 func (n *Nonogram) fillRow(row int, pattern Pattern) (bool, map[int]tailChange) {
 	ok, changes := true, make(map[int]tailChange)
 	for i, col := range n.columns {
-		// move i-th (from highest) bit to lowest position and pick it
-		shouldFill := (pattern >> (len(n.columns) - 1 - i)) & 0x1
-		if shouldFill == 1 {
-			// move to row-th (from-highest) position, and filter column candidates
-			change := col.filter(shouldFill << (len(n.rows) - 1 - row))
-			n.printf("    Fill column %d at row %d, candidates from %d to %d\n", i, row, change.from, change.to)
-			if change.from != change.to {
-				changes[i] = change
-			}
+		// pick i-th (from highest) bit in pattern, to check if need to fill or empty
+		fill := (Pattern(1)<<(len(n.columns)-1-i))&pattern != 0
+		// move to row-th (from-highest) position, and filter column candidates
+		change := col.filterAt(row, fill)
+		n.printf("    Fill %v column %d at row %d, candidates from %d to %d\n", fill, i, row, change.from, change.to)
+		if change.from != change.to {
+			changes[i] = change
 			if change.to == 0 {
 				ok = false
 				break
