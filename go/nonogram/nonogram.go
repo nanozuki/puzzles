@@ -203,10 +203,6 @@ func (n *Nonogram) Solve() bool {
 	}
 
 	n.println("Try to fill row", mrvRow, "with", minCandidates, "candidates")
-	previousTails := make([]int, len(n.columns))
-	for i, col := range n.columns {
-		previousTails[i] = col.tail
-	}
 	for _, pattern := range n.rows[mrvRow].candidates {
 		fillOk, changes := n.fillRow(mrvRow, pattern)
 		n.println("  Try pattern", fmt.Sprintf("%0*b", len(n.columns), pattern), "fillOk:", fillOk)
