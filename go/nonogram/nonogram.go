@@ -93,12 +93,9 @@ func New(rowClues [][]int, columnClues [][]int) *Nonogram {
 	}
 	for i, clues := range rowClues {
 		nonogram.rows[i] = NewLine(len(columnClues), clues)
-		fmt.Printf("Row %d has %d candidates\n", i, len(nonogram.rows[i].candidates))
-
 	}
 	for i, clues := range columnClues {
 		nonogram.columns[i] = NewLine(len(rowClues), clues)
-		fmt.Printf("Column %d has %d candidates\n", i, len(nonogram.columns[i].candidates))
 	}
 	fmt.Printf("New Nonogram with %d rows and %d columns\n", len(nonogram.rows), len(nonogram.columns))
 	return nonogram
@@ -160,9 +157,9 @@ func (n *Nonogram) GridString() string {
 		for range n.columns {
 			builder.WriteString("-+")
 		}
-		builder.WriteString("\n")
 	}
 	printHorizonBorder()
+	builder.WriteString("\n")
 	for _, rowPattern := range n.solution {
 		for i := 0; i < len(n.columns); i++ {
 			if i == 0 {
@@ -201,9 +198,10 @@ func (n *Nonogram) Solve() bool {
 	if minCandidates == 0 {
 		return false
 	}
-	if mrvRow == -1 {
+	if mrvRow == -1 { // all rows are solved
 		return true
 	}
+
 	n.println("Try to fill row", mrvRow, "with", minCandidates, "candidates")
 	previousTails := make([]int, len(n.columns))
 	for i, col := range n.columns {
