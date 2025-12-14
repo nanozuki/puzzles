@@ -204,14 +204,13 @@ func (n *Nonogram) Solve() bool {
 		return true
 	}
 
-	n.Step++
-	if n.MaxStep > 0 && n.Step > n.MaxStep {
-		panic("exceed max step " + strconv.Itoa(n.MaxStep))
-	}
-
 	n.println("Try to fill row", mrvRow, "with", minCandidates, "candidates")
 	for _, pattern := range n.rows[mrvRow].candidates {
+		if n.MaxStep > 0 && n.Step > n.MaxStep {
+			panic("exceed max step " + strconv.Itoa(n.MaxStep))
+		}
 		fillOk, changes := n.fillRow(mrvRow, pattern)
+		n.Step++
 		n.println("  Try pattern", fmt.Sprintf("%0*b", len(n.cols), pattern), "fillOk:", fillOk)
 		if fillOk {
 			n.sovledRows[mrvRow] = pattern
