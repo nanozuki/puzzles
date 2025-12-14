@@ -3,6 +3,7 @@ package nonogram
 import (
 	"fmt"
 	"math"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -22,10 +23,6 @@ type Line struct {
 
 func NewLine(size int, clues []int) *Line {
 	line := &Line{size: size}
-	if len(clues) == 1 && clues[0] == 0 {
-		line.candidates = []Pattern{0}
-		return line
-	}
 	line.candidates = generateCandidates(size, clues)
 	line.tail = len(line.candidates)
 	return line
@@ -36,10 +33,20 @@ func generateCandidates(size int, clues []int) []Pattern {
 	if len(clues) == 0 {
 		panic("clues should not be empty")
 	}
-	freeSpaces := size - len(clues) + 1
-	for _, clue := range clues {
-		freeSpaces -= clue
+
+	if slices.Contains(clues, 0) {
+		if len(clues) > 1 {
+			panic("zero clue should be only clue in a line")
+		}
+		return []Pattern{0}
 	}
+
+	sum := 0
+	for _, clue := range clues {
+		sum += clue
+	}
+	freeSpaces := size - sum - len(clues) + 1
+
 	for i := 0; i <= freeSpaces; i++ {
 		offset := size - clues[0] - i
 		pattern := (Pattern(0x1)<<clues[0] - 1) << offset
@@ -74,10 +81,9 @@ func (l *Line) filterAt(position int, fill bool) tailChange {
 }
 
 type Nonogram struct {
-	rows     []*Line
-	columns  []*Line
-	solution []Pattern
-	sovled   map[int]bool
+	rows       []*Line
+	cols       []*Line
+	sovledRows map[int]Pattern
 
 	Debug   bool
 	Step    int
@@ -86,18 +92,17 @@ type Nonogram struct {
 
 func New(rowClues [][]int, columnClues [][]int) *Nonogram {
 	nonogram := &Nonogram{
-		rows:     make([]*Line, len(rowClues)),
-		columns:  make([]*Line, len(columnClues)),
-		solution: make([]Pattern, len(rowClues)),
-		sovled:   make(map[int]bool),
+		rows:       make([]*Line, len(rowClues)),
+		cols:       make([]*Line, len(columnClues)),
+		sovledRows: make(map[int]Pattern),
 	}
 	for i, clues := range rowClues {
 		nonogram.rows[i] = NewLine(len(columnClues), clues)
 	}
 	for i, clues := range columnClues {
-		nonogram.columns[i] = NewLine(len(rowClues), clues)
+		nonogram.cols[i] = NewLine(len(rowClues), clues)
 	}
-	fmt.Printf("New Nonogram with %d rows and %d columns\n", len(nonogram.rows), len(nonogram.columns))
+	fmt.Printf("New Nonogram with %d rows and %d columns\n", len(nonogram.rows), len(nonogram.cols))
 	return nonogram
 }
 
@@ -154,20 +159,24 @@ func (n *Nonogram) GridString() string {
 	builder := strings.Builder{}
 	printHorizonBorder := func() {
 		builder.WriteString("+")
-		for range n.columns {
+		for range n.cols {
 			builder.WriteString("-+")
 		}
 	}
 	printHorizonBorder()
 	builder.WriteString("\n")
-	for _, rowPattern := range n.solution {
-		for i := 0; i < len(n.columns); i++ {
-			if i == 0 {
+	for row := range len(n.rows) {
+		for col := 0; col < len(n.cols); col++ {
+			if col == 0 {
 				builder.WriteString("|")
 			} else {
 				builder.WriteString(" ")
 			}
-			if rowPattern>>(len(n.columns)-1-i)&0x1 == 1 {
+			filled := false
+			if pattern, ok := n.sovledRows[row]; ok {
+				filled = pattern&(Pattern(1)<<(len(n.cols)-1-col)) != 0
+			}
+			if filled {
 				builder.WriteString("o")
 			} else {
 				builder.WriteString("•")
@@ -180,14 +189,10 @@ func (n *Nonogram) GridString() string {
 }
 
 func (n *Nonogram) Solve() bool {
-	n.Step++
-	if n.MaxStep > 0 && n.Step > n.MaxStep {
-		panic("exceed max step " + strconv.Itoa(n.MaxStep))
-	}
 	minCandidates := math.MaxUint32
 	mrvRow := -1
 	for i, row := range n.rows {
-		if n.sovled[i] {
+		if _, ok := n.sovledRows[i]; ok {
 			continue
 		}
 		if len(row.candidates) < minCandidates {
@@ -195,27 +200,26 @@ func (n *Nonogram) Solve() bool {
 			mrvRow = i
 		}
 	}
-	if minCandidates == 0 {
-		return false
-	}
 	if mrvRow == -1 { // all rows are solved
 		return true
 	}
 
 	n.println("Try to fill row", mrvRow, "with", minCandidates, "candidates")
 	for _, pattern := range n.rows[mrvRow].candidates {
+		if n.MaxStep > 0 && n.Step > n.MaxStep {
+			panic("exceed max step " + strconv.Itoa(n.MaxStep))
+		}
 		fillOk, changes := n.fillRow(mrvRow, pattern)
-		n.println("  Try pattern", fmt.Sprintf("%0*b", len(n.columns), pattern), "fillOk:", fillOk)
+		n.Step++
+		n.println("  Try pattern", fmt.Sprintf("%0*b", len(n.cols), pattern), "fillOk:", fillOk)
 		if fillOk {
-			n.solution[mrvRow] = pattern
-			n.sovled[mrvRow] = true
+			n.sovledRows[mrvRow] = pattern
 			n.println(n.GridString())
 			solved := n.Solve()
 			if solved {
 				return true
 			} else {
-				n.solution[mrvRow] = 0
-				n.sovled[mrvRow] = false
+				delete(n.sovledRows, mrvRow)
 			}
 		}
 		n.rollbackChanges(changes)
@@ -230,18 +234,18 @@ type tailChange struct {
 
 func (n *Nonogram) fillRow(row int, pattern Pattern) (bool, map[int]tailChange) {
 	ok, changes := true, make(map[int]tailChange)
-	for i, col := range n.columns {
+	for i, col := range n.cols {
 		// pick i-th (from highest) bit in pattern, to check if need to fill or empty
-		fill := (Pattern(1)<<(len(n.columns)-1-i))&pattern != 0
+		fill := (Pattern(1)<<(len(n.cols)-1-i))&pattern != 0
 		// move to row-th (from-highest) position, and filter column candidates
 		change := col.filterAt(row, fill)
 		n.printf("    Fill %v column %d at row %d, candidates from %d to %d\n", fill, i, row, change.from, change.to)
 		if change.from != change.to {
 			changes[i] = change
-			if change.to == 0 {
-				ok = false
-				break
-			}
+		}
+		if change.to == 0 {
+			ok = false
+			break
 		}
 	}
 	return ok, changes
@@ -249,7 +253,7 @@ func (n *Nonogram) fillRow(row int, pattern Pattern) (bool, map[int]tailChange) 
 
 func (n *Nonogram) rollbackChanges(changes map[int]tailChange) {
 	for i, change := range changes {
-		col := n.columns[i]
+		col := n.cols[i]
 		col.tail = change.from
 	}
 }

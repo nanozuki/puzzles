@@ -6,7 +6,7 @@ For current version of tests:
 
 ### Test P001
 
-Nonogram with 5 rows and 5 columns, Solved Nonogram use 7 steps, 0.00s:
+Nonogram with 5 rows and 5 columns, Solved Nonogram use 14 steps, 0.00s:
 
 ```
 +-+-+-+-+-+
@@ -20,7 +20,7 @@ Nonogram with 5 rows and 5 columns, Solved Nonogram use 7 steps, 0.00s:
 
 ### P060
 
-Nonogram with 10 rows and 10 columns, Solved Nonogram use 83 steps, 0.00s:
+Nonogram with 10 rows and 10 columns, Solved Nonogram use 1681 steps, 0.00s:
 
 ```
 +-+-+-+-+-+-+-+-+-+-+
@@ -39,7 +39,7 @@ Nonogram with 10 rows and 10 columns, Solved Nonogram use 83 steps, 0.00s:
 
 ### P097
 
-Nonogram with 15 rows and 15 columns, Solved Nonogram use 610 steps, 0.02s:
+Nonogram with 15 rows and 15 columns, Solved Nonogram use 36993 steps, 0.02s:
 
 ```
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -63,7 +63,7 @@ Nonogram with 15 rows and 15 columns, Solved Nonogram use 610 steps, 0.02s:
 
 # P136
 
-New Nonogram with 15 rows and 20 columns, Solved Nonogram use 30 steps, 0.00s:
+New Nonogram with 15 rows and 20 columns, Solved Nonogram use 8867 steps, 0.00s:
 
 ```
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -87,8 +87,8 @@ New Nonogram with 15 rows and 20 columns, Solved Nonogram use 30 steps, 0.00s:
 
 ### P150
 
-New Nonogram with 15 rows and 20 columns, Solved Nonogram use 67590 steps,
-4.04s:
+New Nonogram with 15 rows and 20 columns, Solved Nonogram use 13540468 steps,
+4.19s:
 
 ```
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
