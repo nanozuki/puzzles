@@ -1,12 +1,21 @@
 # Nonogram
 
+Algorithm:
+
+- Find all possible patterns for each row and column based on clues
+- Use all candidate patterns to find force filled and force empty cells in a
+  line
+- Propagate the filled and empty cells to other lines until no more cells can be
+  propagated
+- Use backtracking to try each branch if the propagation cannot fill all cells
+
 ## Benchmark
 
 For current version of tests:
 
 ### Test P001
 
-Nonogram with 5 rows and 5 columns, Solved Nonogram use 14 steps, 0.00s:
+Nonogram with 5 rows and 5 columns, Solved Nonogram use 40 steps, 0.00s:
 
 ```
 +-+-+-+-+-+
@@ -20,7 +29,7 @@ Nonogram with 5 rows and 5 columns, Solved Nonogram use 14 steps, 0.00s:
 
 ### P060
 
-Nonogram with 10 rows and 10 columns, Solved Nonogram use 1681 steps, 0.00s:
+Nonogram with 10 rows and 10 columns, Solved Nonogram use 200 steps, 0.00s:
 
 ```
 +-+-+-+-+-+-+-+-+-+-+
@@ -39,7 +48,7 @@ Nonogram with 10 rows and 10 columns, Solved Nonogram use 1681 steps, 0.00s:
 
 ### P097
 
-Nonogram with 15 rows and 15 columns, Solved Nonogram use 36993 steps, 0.02s:
+Nonogram with 15 rows and 15 columns, Solved Nonogram use 270 steps, 0.00s:
 
 ```
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -63,7 +72,7 @@ Nonogram with 15 rows and 15 columns, Solved Nonogram use 36993 steps, 0.02s:
 
 # P136
 
-New Nonogram with 15 rows and 20 columns, Solved Nonogram use 8867 steps, 0.00s:
+New Nonogram with 15 rows and 20 columns, Solved Nonogram use 175 steps, 0.00s:
 
 ```
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -87,8 +96,8 @@ New Nonogram with 15 rows and 20 columns, Solved Nonogram use 8867 steps, 0.00s:
 
 ### P150
 
-New Nonogram with 15 rows and 20 columns, Solved Nonogram use 13540468 steps,
-4.19s:
+New Nonogram with 15 rows and 20 columns, Solved Nonogram use 420 steps,
+0.00s:
 
 ```
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
