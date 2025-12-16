@@ -121,7 +121,7 @@ func (l *Line) forcedValues() (Pattern, Pattern) {
 type Nonogram struct {
 	rows       []*Line
 	cols       []*Line
-	sovledRows map[int]Pattern
+	solvedRows map[int]Pattern
 
 	Debug   bool
 	Step    int
@@ -132,7 +132,7 @@ func New(rowClues [][]int, columnClues [][]int) *Nonogram {
 	nonogram := &Nonogram{
 		rows:       make([]*Line, len(rowClues)),
 		cols:       make([]*Line, len(columnClues)),
-		sovledRows: make(map[int]Pattern),
+		solvedRows: make(map[int]Pattern),
 	}
 	for i, clues := range rowClues {
 		nonogram.rows[i] = NewLine(Row, i, len(columnClues), clues)
@@ -218,7 +218,7 @@ func (n *Nonogram) GridString() string {
 				builder.WriteString(" ")
 			}
 			filled := false
-			if pattern, ok := n.sovledRows[row]; ok {
+			if pattern, ok := n.solvedRows[row]; ok {
 				filled = pattern&(Pattern(1)<<(len(n.cols)-1-col)) != 0
 			}
 			if filled {
@@ -247,7 +247,7 @@ func (n *Nonogram) Solve() bool {
 			}
 			mergeChanges(curRowsChanges, changes)
 			if row.tail == 1 {
-				n.sovledRows[row.index] = row.candidates[0]
+				n.solvedRows[row.index] = row.candidates[0]
 			}
 		}
 		mergeChanges(rowsChanges, curRowsChanges)
@@ -271,11 +271,11 @@ func (n *Nonogram) Solve() bool {
 	minCandidates := math.MaxUint32
 	mrvRow := -1
 	for i, row := range n.rows {
-		if _, ok := n.sovledRows[i]; ok {
+		if _, ok := n.solvedRows[i]; ok {
 			continue
 		}
-		if len(row.candidates) < minCandidates {
-			minCandidates = len(row.candidates)
+		if row.tail < minCandidates {
+			minCandidates = row.tail
 			mrvRow = i
 		}
 	}
@@ -284,18 +284,18 @@ func (n *Nonogram) Solve() bool {
 	}
 
 	n.println("Try to fill row", mrvRow, "with", minCandidates, "candidates")
-	for _, pattern := range n.rows[mrvRow].candidates {
+	for _, pattern := range n.rows[mrvRow].candidates[:minCandidates] {
 		n.incStep()
 		fillOk, branchColsChanges := n.applyRow(mrvRow, pattern)
 		n.println("  Try pattern", fmt.Sprintf("%0*b", len(n.cols), pattern), "fillOk:", fillOk)
 		if fillOk {
-			n.sovledRows[mrvRow] = pattern
+			n.solvedRows[mrvRow] = pattern
 			n.println(n.GridString())
 			solved := n.Solve()
 			if solved {
 				return true
 			} else {
-				delete(n.sovledRows, mrvRow)
+				delete(n.solvedRows, mrvRow)
 			}
 		}
 		n.rollbackChanges(map[int]tailChange{}, branchColsChanges)
