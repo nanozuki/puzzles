@@ -343,6 +343,9 @@ func (n *Nonogram) Solve() bool {
 		for _, line := range lines {
 			n.incStep()
 			ok, effected := n.propagate(line)
+			if n.IsSolved() {
+				return true
+			}
 			if !ok {
 				n.Rollback(beforePropagation)
 				return false
@@ -357,10 +360,6 @@ func (n *Nonogram) Solve() bool {
 			lineQueue = append(lineQueue, effectedLines)
 		}
 		cursor++
-	}
-
-	if n.IsSolved() {
-		return true
 	}
 
 	minCandidates := math.MaxUint32
@@ -383,7 +382,7 @@ func (n *Nonogram) Solve() bool {
 	for _, pattern := range n.rows[mrvRow].candidates[:minCandidates] {
 		n.incStep()
 		applyOk := n.applyRow(mrvRow, pattern)
-		n.println("  Try pattern", fmt.Sprintf("%0*b", len(n.cols), pattern), "applyOk:", applyOk)
+		n.printf("[%d] Try pattern %0*b for row %d, result: %v\n", n.Step, len(n.cols), pattern, mrvRow, applyOk)
 		if applyOk {
 			solved := n.Solve()
 			if solved {
@@ -404,7 +403,7 @@ func (n *Nonogram) propagate(source *Line) (bool, map[int]*Line) {
 	if forcedFilled == 0 && forcedEmpty == 0 {
 		return true, effected
 	}
-	n.printf("  Propagate %v %d, forced filled: %0*b, forced empty: %0*b\n", source.direction, source.index, source.size, forcedFilled, source.size, forcedEmpty)
+	n.printf("[%d] Propagate %v %d, forced filled: %0*b, forced empty: %0*b\n", n.Step, source.direction, source.index, source.size, forcedFilled, source.size, forcedEmpty)
 
 	for i := 0; i < source.size; i++ {
 		fill := (Pattern(1)<<(source.size-1-i))&forcedFilled != 0
@@ -419,7 +418,6 @@ func (n *Nonogram) propagate(source *Line) (bool, map[int]*Line) {
 			continue
 		}
 		fillOk, lineChange := n.FillCell(source, i, value)
-		n.printf("    Forced fill %v %d at %v %d\n", source.direction, source.index, source.direction, source.index)
 		if !fillOk {
 			return false, nil
 		}
@@ -440,7 +438,6 @@ func (n *Nonogram) applyRow(row int, pattern Pattern) bool {
 			value = Empty
 		}
 		fillOk, _ := n.FillCell(col, row, value)
-		n.printf("    Fill %v column %d at row %d\n", fill, i, row)
 		if !fillOk {
 			return false
 		}
