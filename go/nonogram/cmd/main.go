@@ -12,7 +12,7 @@ func main() {
 		return
 	}
 	puzzle := nonogram.NewFromString(os.Args[1])
-	// puzzle.Debug = true
+	puzzle.Debug = true
 	// puzzle.MaxStep = 1
 	ok := puzzle.Solve()
 	if !ok {

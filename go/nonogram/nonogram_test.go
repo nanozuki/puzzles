@@ -18,11 +18,11 @@ func TestNonogram_Solve(t *testing.T) {
 			wantSolved: true,
 			wantGrid: strings.TrimSpace(`
 +-+-+-+-+-+
-|• o o o •|
-|• o • o •|
-|• o o o •|
-|• • o • •|
-|• • o o •|
+|· o o o ·|
+|· o · o ·|
+|· o o o ·|
+|· · o · ·|
+|· · o o ·|
 +-+-+-+-+-+`),
 		},
 		{
@@ -31,16 +31,16 @@ func TestNonogram_Solve(t *testing.T) {
 			wantSolved: true,
 			wantGrid: strings.TrimSpace(`
 +-+-+-+-+-+-+-+-+-+-+
-|• • • o o o • • o o|
-|o • o • o • o o • •|
-|• o o • o o • • • o|
-|• • o • • o o • o •|
-|• • • o o • • o o o|
-|o • o • o • • • • o|
-|o o o o • o • • o •|
-|• • • • o • o o • •|
-|• • • o • • • o • •|
-|• o o • o • • o o •|
+|· · · o o o · · o o|
+|o · o · o · o o · ·|
+|· o o · o o · · · o|
+|· · o · · o o · o ·|
+|· · · o o · · o o o|
+|o · o · o · · · · o|
+|o o o o · o · · o ·|
+|· · · · o · o o · ·|
+|· · · o · · · o · ·|
+|· o o · o · · o o ·|
 +-+-+-+-+-+-+-+-+-+-+`),
 		},
 		{
@@ -49,21 +49,21 @@ func TestNonogram_Solve(t *testing.T) {
 			wantSolved: true,
 			wantGrid: strings.TrimSpace(`
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|• • • • • • • • • • • o • o •|
-|• • • • • • • o o o o • o o •|
-|• • • • • • o o o o o o • o •|
-|• • • • • • o o o • o • o • o|
-|• • • • • • o o • • o o o o •|
-|• • • • • • o o • • o o o • •|
-|• • • • • o o o o o o • o • o|
-|• • • • o o • o o • • • o o o|
-|• • • o o • o • • • • o o o •|
-|• • o o • • o • • • o o • o •|
-|• o o • • • o o • • • • • o •|
-|o • o • • • • o • • • • • o •|
-|o • o • • • • o o • • • • o •|
-|• o o • • • • • o • • • • • o|
-|• • • • • • • • o o o o o o o|
+|· · · · · · · · · · · o · o ·|
+|· · · · · · · o o o o · o o ·|
+|· · · · · · o o o o o o · o ·|
+|· · · · · · o o o · o · o · o|
+|· · · · · · o o · · o o o o ·|
+|· · · · · · o o · · o o o · ·|
+|· · · · · o o o o o o · o · o|
+|· · · · o o · o o · · · o o o|
+|· · · o o · o · · · · o o o ·|
+|· · o o · · o · · · o o · o ·|
+|· o o · · · o o · · · · · o ·|
+|o · o · · · · o · · · · · o ·|
+|o · o · · · · o o · · · · o ·|
+|· o o · · · · · o · · · · · o|
+|· · · · · · · · o o o o o o o|
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+`),
 		},
 		{
@@ -72,21 +72,21 @@ func TestNonogram_Solve(t *testing.T) {
 			wantSolved: true,
 			wantGrid: strings.TrimSpace(`
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|• • • o o o o • o o o • • o o o • • • •|
-|• • • • o o o o • o o o o o o o o o o o|
-|• • o o • o o o • • o • o o • o o o o •|
-|• • o o o o o • o o o o • o o o • o o o|
-|• • • • o o • o • o o • o o • • • o o •|
-|• • o o o o o • o • • o o • • o o • • o|
-|o o o o o • o o • • o o o o o o • o o o|
-|o • o • o o • o o o • o o o o o o o o •|
-|• • • • • o o o • • • • • o • o • • • •|
-|• • • • • o o o • • • • • • o o • • • •|
-|• • • • • o o • • • • • • • • o o • • •|
-|• • • • • o o • • • • • • • • o o • • •|
-|• • • • • o o o o • • • • • • o o • • •|
-|• • • • o o o o • o • • • • o o o • • •|
-|• • • • o o • o • o • • • o o • o • • •|
+|· · · o o o o · o o o · · o o o · · · ·|
+|· · · · o o o o · o o o o o o o o o o o|
+|· · o o · o o o · · o · o o · o o o o ·|
+|· · o o o o o · o o o o · o o o · o o o|
+|· · · · o o · o · o o · o o · · · o o ·|
+|· · o o o o o · o · · o o · · o o · · o|
+|o o o o o · o o · · o o o o o o · o o o|
+|o · o · o o · o o o · o o o o o o o o ·|
+|· · · · · o o o · · · · · o · o · · · ·|
+|· · · · · o o o · · · · · · o o · · · ·|
+|· · · · · o o · · · · · · · · o o · · ·|
+|· · · · · o o · · · · · · · · o o · · ·|
+|· · · · · o o o o · · · · · · o o · · ·|
+|· · · · o o o o · o · · · · o o o · · ·|
+|· · · · o o · o · o · · · o o · o · · ·|
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 			`),
 		},
@@ -96,21 +96,21 @@ func TestNonogram_Solve(t *testing.T) {
 			wantSolved: true,
 			wantGrid: strings.TrimSpace(`
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|• • • • • • • o • • o • • o • • o • o •|
-|• • • • o o o o o • o • o o o • o o o •|
-|• • • o • • • o o o o o • • o o • • o o|
-|• • • o • o • • o • o o o o • • o • o •|
-|• • • • o o • • o o o o o • • • • o o o|
-|• • o o o • o o • o • • o • o • • o o o|
-|• o • • • o • • o • • o o o o • o • o o|
-|• o • o • • o • o • • o • • • o o • o •|
-|• • o o • • o o o o o • • • • • o o o •|
-|• o o o o o • o • • • o • o • • o • o o|
-|o • • • o • o • • o • • o o o • o o o o|
-|o • o • • o o • o o • o o o • o o • o •|
-|• o o • • o • o o o o o o o o o o o • •|
-|• • o • o • o • • • o o o o o o • o o •|
-|• • • o o o • • o • o • o o o o • o • o|
+|· · · · · · · o · · o · · o · · o · o ·|
+|· · · · o o o o o · o · o o o · o o o ·|
+|· · · o · · · o o o o o · · o o · · o o|
+|· · · o · o · · o · o o o o · · o · o ·|
+|· · · · o o · · o o o o o · · · · o o o|
+|· · o o o · o o · o · · o · o · · o o o|
+|· o · · · o · · o · · o o o o · o · o o|
+|· o · o · · o · o · · o · · · o o · o ·|
+|· · o o · · o o o o o · · · · · o o o ·|
+|· o o o o o · o · · · o · o · · o · o o|
+|o · · · o · o · · o · · o o o · o o o o|
+|o · o · · o o · o o · o o o · o o · o ·|
+|· o o · · o · o o o o o o o o o o o · ·|
+|· · o · o · o · · · o o o o o o · o o ·|
+|· · · o o o · · o · o · o o o o · o · o|
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 			`),
 		},
